@@ -1,5 +1,5 @@
 # 3_sem_computer_technology
-## task 1 
+## Task 1 
 `stat`
 
 Реализация пользовательского аналога команды stat.
