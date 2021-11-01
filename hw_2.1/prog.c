@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdint.h>
+
+int main(int argc, char* argv[])
+{
+	if (argc != 3) {
+		fprintf(stderr, "Usage: %s filename text-to-writte\n", argv[0]);
+		return 0;
+		//return RESULT_BAD_ARG;
+	}
+
+	//открываем файл, для пользователя чтение и печать, для остальных только чтение
+	int f = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+	//проверка открытого файла
+	if (!f) {
+		perror("Failed write to file for writing\n");
+		return 0;
+		//return RESULT_OPEN_FAILED;
+	}
+
+	//запись в файл и проверка записи на ошибки
+	if (!write(f, argv[2], strlen(argv[2]))) {
+		perror("Failed write to file");
+		close(f);
+		return 0;
+		//return RESULT_BAD_WRITE;
+	}
+
+	//закрываем файл
+	if (!close(f)) {
+		perror("Failed close file");
+		return 0;
+		//return RESULT_BAD_CLOSE;
+	}
+
+	return 1;
+	//return RESULT_OK;
+}
