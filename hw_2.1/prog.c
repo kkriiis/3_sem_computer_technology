@@ -11,7 +11,6 @@ int main(int argc, char* argv[])
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s filename text-to-writte\n", argv[0]);
 		return 0;
-		//return RESULT_BAD_ARG;
 	}
 
 	//открываем файл, для пользователя чтение и печать, для остальных только чтение
@@ -21,7 +20,6 @@ int main(int argc, char* argv[])
 	if (!f) {
 		perror("Failed write to file for writing\n");
 		return 0;
-		//return RESULT_OPEN_FAILED;
 	}
 
 	//запись в файл и проверка записи на ошибки
@@ -29,16 +27,13 @@ int main(int argc, char* argv[])
 		perror("Failed write to file");
 		close(f);
 		return 0;
-		//return RESULT_BAD_WRITE;
 	}
 
 	//закрываем файл
 	if (!close(f)) {
 		perror("Failed close file");
 		return 0;
-		//return RESULT_BAD_CLOSE;
 	}
 
 	return 1;
-	//return RESULT_OK;
 }
