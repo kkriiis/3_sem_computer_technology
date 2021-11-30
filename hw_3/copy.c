@@ -11,6 +11,7 @@
 //BUF_SIZE - размер буфера для форматного вывода в консоль (четверть блока)
 unsigned int BUF_SIZE = 256;
 
+//функция, удаляющая файл
 void remove_file(const char* filename) {
 
     if (unlink(filename) == -1) {
@@ -22,6 +23,7 @@ void remove_file(const char* filename) {
     return;
 }
 
+//функция для чтения в буфер
 ssize_t writeall(int fd, const void *buf, size_t count) {
     size_t bytes_written = 0;
     const uint8_t *buf_addr = (const uint8_t*) buf;
