@@ -64,6 +64,7 @@ int main() {
         return 0;
     }
 
+    //определение типа и права доступа, вывод в консоль
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
         char entry_type = file_type(entry->d_type);
@@ -71,15 +72,18 @@ int main() {
         struct stat sb;
         assert((lstat(entry->d_name, &sb)) == 0);
 
+        //определяем права доступа к файлу и выводим
         char buf[BUF_SIZE];
         get_access(sb.st_mode, buf);
         printf("[%s] ", buf);
 
+        //определяем тип файла
         if (entry_type == '?') {
             entry_type = file_mode(sb.st_mode);
         }
 
-        printf("%c %s\n", entry_type, entry->d_name);
+        //выводим тип файла и имя
+        printf("%c  %s\n", entry_type, entry->d_name);
     }
 
     closedir(dir);
