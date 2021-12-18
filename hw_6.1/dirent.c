@@ -5,42 +5,41 @@
 #include <unistd.h>
 #include <assert.h>
 
-//BUF_SIZE - размер буфера для форматного вывода в консоль (четверть блока)
-unsigned int BUF_SIZE = 256;
+#include "../working_with_files_lib.h"
 
-char file_mode(unsigned mode) {
+// char file_mode(unsigned mode) {
 
-    switch (mode & S_IFMT) {
-        case S_IFBLK:  return 'b';   break;
-        case S_IFCHR:  return 'c';   break;
-        case S_IFDIR:  return 'd';   break;
-        case S_IFIFO:  return 'f';   break;
-        case S_IFLNK:  return 'l';   break;
-        case S_IFREG:  return 'r';   break;
-        case S_IFSOCK: return 's';   break;
-        default:       return '?';   break;
-    }
+//     switch (mode & S_IFMT) {
+//         case S_IFBLK:  return 'b';   break;
+//         case S_IFCHR:  return 'c';   break;
+//         case S_IFDIR:  return 'd';   break;
+//         case S_IFIFO:  return 'f';   break;
+//         case S_IFLNK:  return 'l';   break;
+//         case S_IFREG:  return 'r';   break;
+//         case S_IFSOCK: return 's';   break;
+//         default:       return '?';   break;
+//     }
 
-    return '?';
+//     return '?';
 
-}
+// }
 
-//определяем тип файла
-char file_type(unsigned char dtype) {
+// //определяем тип файла
+// char file_type(unsigned char dtype) {
 
-    switch (dtype) {
-        case DT_BLK :     return 'b'; break; 
-        case DT_CHR:      return 'c'; break;
-        case DT_DIR:      return 'd'; break;
-        case DT_FIFO:     return 'f'; break;
-        case DT_LNK:      return 'l'; break;
-        case DT_REG:      return 'r'; break;
-        case DT_SOCK:     return 's'; break;
-        case DT_UNKNOWN:  return '?'; break;
-    }
+//     switch (dtype) {
+//         case DT_BLK :     return 'b'; break; 
+//         case DT_CHR:      return 'c'; break;
+//         case DT_DIR:      return 'd'; break;
+//         case DT_FIFO:     return 'f'; break;
+//         case DT_LNK:      return 'l'; break;
+//         case DT_REG:      return 'r'; break;
+//         case DT_SOCK:     return 's'; break;
+//         case DT_UNKNOWN:  return '?'; break;
+//     }
 
-    return '?';
-}
+//     return '?';
+// }
 
 //записываем в буфер права доступа к файлу
 void get_access(mode_t st_mode, char* buf) {
@@ -67,15 +66,13 @@ int main() {
     //определение типа и права доступа, вывод в консоль
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
-        char entry_type = file_type(entry->d_type);
+        char entry_type = dtype_char(entry->d_type);
 
         struct stat sb;
         assert((lstat(entry->d_name, &sb)) == 0);
 
         //определяем права доступа к файлу и выводим
-        char buf[BUF_SIZE];
-        get_access(sb.st_mode, buf);
-        printf("[%s] ", buf);
+        printf("[%s] ", print_access_rights(sb.st_mode));
 
         //определяем тип файла
         if (entry_type == '?') {

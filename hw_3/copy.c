@@ -8,112 +8,111 @@
 #include <stdlib.h>
 #include <sys/sysmacros.h>
 
-//BUF_SIZE - размер буфера для форматного вывода в консоль (четверть блока)
-unsigned int BUF_SIZE = 256;
+#include "../working_with_files_lib.h"
 
 //функция, удаляющая файл
-void remove_file(const char* filename) {
+// void remove_file(const char* filename) {
 
-    if (unlink(filename) == -1) {
-        fprintf(stderr, "It's not possible to remove this file");
-        perror("It's not possible to remove this file");
-        return;
-    }
-    printf("[+] Successful removing: %s", filename);
-    return;
-}
+//     if (unlink(filename) == -1) {
+//         fprintf(stderr, "It's not possible to remove this file");
+//         perror("It's not possible to remove this file");
+//         return;
+//     }
+//     printf("[+] Successful removing: %s", filename);
+//     return;
+// }
 
-//функция для чтения в буфер
-ssize_t writeall(int fd, const void *buf, size_t count) {
-    size_t bytes_written = 0;
-    const uint8_t *buf_addr = (const uint8_t*) buf;
+// //функция для чтения в буфер
+// ssize_t writeall(int fd, const void *buf, size_t count) {
+//     size_t bytes_written = 0;
+//     const uint8_t *buf_addr = (const uint8_t*) buf;
 
-    while (bytes_written < count) {
-        ssize_t res = write(fd, buf_addr + bytes_written, count - bytes_written);
+//     while (bytes_written < count) {
+//         ssize_t res = write(fd, buf_addr + bytes_written, count - bytes_written);
 
-        if (res < 0) {
-            return res;
-        }
+//         if (res < 0) {
+//             return res;
+//         }
 
-        bytes_written += (size_t) res;
-    }
-    return (ssize_t) bytes_written;
-}
+//         bytes_written += (size_t) res;
+//     }
+//     return (ssize_t) bytes_written;
+// }
 
-//функция, осуществляющая копирование информации, при использовании обычных файлов
-void copy_file(unsigned from, unsigned to, const char* file_to, struct stat *sb) {
+// //функция, осуществляющая копирование информации, при использовании обычных файлов
+// void copy_file(unsigned from, unsigned to, const char* file_to, struct stat *sb) {
     
-    //создаем буфер для чтения
-    char *buf = (char*)calloc(BUF_SIZE, sizeof(char));
+//     //создаем буфер для чтения
+//     char *buf = (char*)calloc(BUF_SIZE, sizeof(char));
     
-    long long copy_file_size = (long long) sb->st_size;
+//     long long copy_file_size = (long long) sb->st_size;
     
-    //копирование
-    while(copy_file_size > 0){
-        ssize_t read_file = read(from, buf, BUF_SIZE);
-        if (read_file < 0) {
-            fprintf(stderr, "Failed read from file");
-            perror("Failed read from file");
-            remove_file(file_to);
-            close(from);
-            return;
-        }
+//     //копирование
+//     while(copy_file_size > 0){
+//         ssize_t read_file = read(from, buf, BUF_SIZE);
+//         if (read_file < 0) {
+//             fprintf(stderr, "Failed read from file");
+//             perror("Failed read from file");
+//             remove_file(file_to);
+//             close(from);
+//             return;
+//         }
 
-        ssize_t write_file = writeall(to, buf, read_file);
-        if (write_file < 0) {
-            fprintf(stderr, "Failed write to file");
-            perror("Failed write to file");
-            remove_file(file_to);
-            close(to);
-            return;
-        }
+//         ssize_t write_file = writeall(to, buf, read_file);
+//         if (write_file < 0) {
+//             fprintf(stderr, "Failed write to file");
+//             perror("Failed write to file");
+//             remove_file(file_to);
+//             close(to);
+//             return;
+//         }
 
-        if (write_file != read_file) {
-            fprintf(stderr, "The number of symbols written does't match the number of symbols read");
-            perror("The number of symbols written does't match the number of symbols read");
-            remove_file(file_to);
-            close(to);
-            return;
-        }
+//         if (write_file != read_file) {
+//             fprintf(stderr, "The number of symbols written does't match the number of symbols read");
+//             perror("The number of symbols written does't match the number of symbols read");
+//             remove_file(file_to);
+//             close(to);
+//             return;
+//         }
 
-        copy_file_size -= read_file;
-    }
+//         copy_file_size -= read_file;
+//     }
 
-    free(buf);
-    return;
-}
+//     free(buf);
+//     return;
+// }
 
-//функция, проверяющая доступ к файлу
-int check_user_access(const char* file_from, const char access, mode_t mode) {
-    switch (access) {
-        case 'r': return (mode & S_IRUSR) ? 1 : 0;
-        case 'w': return (mode & S_IWUSR) ? 1 : 0;
-        case 'x': return (mode & S_IXUSR) ? 1 : 0;
-        default:  return -1;
-    }
-}
+// //функция, проверяющая права пользователя
+// int check_user_access(const char* file_from, const char access, mode_t mode) {
+//     switch (access) {
+//         case 'r': return (mode & S_IRUSR) ? 1 : 0;
+//         case 'w': return (mode & S_IWUSR) ? 1 : 0;
+//         case 'x': return (mode & S_IXUSR) ? 1 : 0;
+//         default:  return -1;
+//     }
+// }
 
-//функция, осуществляющая копирование информации, при использовании ссылок
-void copy_link(const char* file_from, const char* file_to) {
-    char* buf = (char*) calloc(BUF_SIZE, sizeof(char));
+// //функция, осуществляющая копирование информации, при использовании ссылок
+// void copy_link(const char* file_from, const char* file_to) {
+//     char* buf = (char*) calloc(BUF_SIZE, sizeof(char));
 
-    if (readlink(file_from, buf, BUF_SIZE) < 0) {
-        fprintf(stderr, "Failed to read link");
-        perror("Failed to read link");
-        free(buf);
-        return;
-    }
+//     if (readlink(file_from, buf, BUF_SIZE) < 0) {
+//         fprintf(stderr, "Failed to read link");
+//         perror("Failed to read link");
+//         free(buf);
+//         return;
+//     }
 
-    if (symlink(buf, file_to) < 0) {
-        fprintf(stderr, "Failed to create a  new link");
-        perror("Failed to create a  new link");
-        free(buf);
-        return;
-    }
+//     if (symlink(buf, file_to) < 0) {
+//         fprintf(stderr, "Failed to create a  new link");
+//         perror("Failed to create a  new link");
+//         free(buf);
+//         return;
+//     }
   
-    //успешно!
-    return;
-}
+//     //успешно!
+//     return;
+// }
 
 //основная функция по определению файла и осуществлению копирования
 int ftdac(struct stat *sb, char* file_from, char* file_to) {

@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#include "../working_with_files_lib.h"
+
 int main(int argc, char* argv[])
 {
 	if (argc != 3) {

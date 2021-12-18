@@ -6,8 +6,9 @@
 #include <unistd.h>
 #include <stdint.h>
 
-int main(int argc, char* argv[])
-{
+#include "../working_with_files_lib.h"
+
+int main(int argc, char* argv[]) {
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s filename text-to-writte\n", argv[0]);
 		return 0;
