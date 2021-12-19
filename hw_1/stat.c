@@ -8,56 +8,6 @@
 
 #include "../working_with_files_lib.h"
 
-//
- //внесено в библиотеку
-// //BUF_SIZE - buffer size for formatted output to the console (quarter block)
-// //(In Russia ) //BUF_SIZE - размер буфера для форматного вывода в консоль (четверть блока)
-// unsigned int BUF_SIZE = 256;
-
-// //time to string conversion function
-// //(In Russia ) //функция преобразования времени в строку
-// char* get_UTC_time(char* str, const time_t* s_time) {
-// 	struct tm *time;
-// 	time = gmtime(s_time);
-
-// 	return (strftime(str, BUF_SIZE, "%x %A %X (UTC)", time) > 0) ? str : NULL;
-// }
-
-
-//функция внесена в библиотеку
-// //функция, определяющая тип файла(regular, dir, symlink etc)
-// const char* print_file_tipe(unsigned mode) {
-
-//         //маска S_IFMT путем побитового AND позволяет считывать только необходимые биты поля st_mode
-// 	   switch (mode & S_IFMT) {
-//           	 case S_IFBLK:  return "block dwvice\n";
-//            	 case S_IFCHR:  return "character device\n";
-//            	 case S_IFDIR:  return "directory\n";
-//           	 case S_IFIFO:  return "FIFO/pipe\n";
-//           	 case S_IFLNK:  return "symlink\n";
-//           	 case S_IFREG:  return "regular file\n";
-//            	 case S_IFSOCK: return "socket\n";
-// 	   }
-// 	   return "unknown?\n";
-// }
-
-//внесено в библиотеку
-//функция, записывающая права доступа к файлу в buf
-// char* print_access_rights(unsigned mode) {
-// 	char *buf;
-// 	buf = (char*)malloc(sizeof("rrrwwwxxx")*sizeof(char));
-// 	buf[0] = mode & S_IRUSR ? 'r' : '-';
-//         buf[1] = mode & S_IWUSR ? 'w' : '-';
-//         buf[2] = mode & S_IXUSR ? 'x' : '-';
-//         buf[3] = mode & S_IRGRP ? 'r' : '-';
-//         buf[4] = mode & S_IWGRP ? 'w' : '-';
-//         buf[5] = mode & S_IXGRP ? 'x' : '-';
-//         buf[6] = mode & S_IROTH ? 'r' : '-';
-//         buf[7] = mode & S_IWOTH ? 'w' : '-';
-//         buf[8] = mode & S_IXOTH ? 'x' : '-';
-// 	return buf;
-// }
-
 int main(int argc, char *argv[])
        {
            struct stat sb;

@@ -27,17 +27,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // //открываем родительскую дерикторию(там находится копируемый каталог)
-    // //открываем директорию, в которую будем копировать
-    // int dir_to = openat(AT_FDCWD, argv[1], O_RDONLY, O_DIRECTORY);
-    // if (!dir_to) {
-    //     fprintf(stderr, "Can't open directory %s \n", argv[1]);
-    //     perror("Can't open current directory");
-    //     return 0;
-    // }
-    
-    //base_die == file_from == dir_to
-    //cd_dir == dir_from
     //открываем копируемую дерикторию
     int dir_from = openat(AT_FDCWD, argv[2], O_RDONLY);
     if (dir_from < 0) {
@@ -49,7 +38,6 @@ int main(int argc, char *argv[]) {
     struct stat dir_sb;
     assert((fstatat(AT_FDCWD, argv[2], &dir_sb, AT_SYMLINK_NOFOLLOW)) == 0);
 
-    //создаем в родительской дериктории каталог-копию с правами исходника
     //создаем копию копируемой директории
     if (mkdirat(AT_FDCWD, copy_file_name(argv[2]), dir_sb.st_mode) == -1) {
         fprintf(stderr, "Failed to create directory\n");
@@ -71,10 +59,6 @@ int main(int argc, char *argv[]) {
         perror("Failed in copy");
         return 0;
     }
-
-    //не закрываем cp_dir. т.к. в функции copy_dir мы уже хакрыли соответсвующий дескриптор
-    // closedir(copy_dir_from);
-    // closedir(dir_to);
 
     assert(errno == 0);
     //успех!
