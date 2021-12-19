@@ -196,48 +196,53 @@ char file_mode(unsigned mode) {
 }
 
 //функция, осуществляющая копирование директорий
-int copy_dir(int cp_cp, int cp, const char* copy_file_name) {
-    DIR *dir = fdopendir(cp);
+int copy_dir(int dir_from, int dir_to) {
+    DIR *dir = fdopendir(dir_from);
     struct dirent *entry;
+
+    DIR *dirto = fdopendir(dir_to);
+    struct dirent *to;
+    to = readdir(dirto);
 
     //читаем записи копируемого каталога и копируем только обычные файлы
     while ((entry = readdir(dir)) != NULL) {
         struct stat sb;
-        assert((fstatat(cp, entry->d_name, &sb, AT_SYMLINK_NOFOLLOW)) == 0);
+        assert((fstatat(AT_FDCWD, entry->d_name, &sb, AT_SYMLINK_NOFOLLOW)) == 0);
 
         //проверяем тип файла
         if ((sb.st_mode & S_IFMT) != S_IFREG) {
             fprintf(stderr, "File   %s   has type [%c], can't copy it now", entry->d_name, file_mode(sb.st_mode));
             perror("Can't copy file with this type");
+            return 0;
         }
         else {
             //окрываем копируемый файл
-            int file_from = openat(cp, entry->d_name, O_RDONLY);
+            int file_from = openat(AT_FDCWD, entry->d_name, O_RDONLY);
             if (file_from < 0) {
                 fprintf(stderr, "Failed for open copy file or this file can't be read");
                 perror("Can't open file");
-                remove_file(copy_file_name);
+                remove_file(entry->d_name);
                 return 0;
             }
 
-            //открываем файл-копию в каталоге /base_dir/cp_dir
-            int file_to = openat(cp_cp, entry->d_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            //открываем (создаем) файл-копию в dir_to
+            int file_to = openat(AT_FDCWD, to->d_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (file_to < 0) {
                 fprintf(stderr, "Failed for open destination file");
                 perror("Can't open file");
-                remove_file(copy_file_name);
+                remove_file(to->d_name);
                 return 0;
             }
 
             //проверяем право на чтение файла
-            if (check_user_access(entry->d_name, 'r', sb.st_mode) != 1) {
+            if (check_user_access(to->d_name, 'r', sb.st_mode) != 1) {
                 fprintf(stderr, "This file can't be read\n");
                 perror("Can't be read");
                 return 0;
             }
 
             //само копирование
-            copy_file(file_from, file_to, entry->d_name, &sb);
+            copy_file(file_from, file_to, to->d_name, &sb);
 
             //закрываем файлы
             close(file_from);
@@ -245,5 +250,6 @@ int copy_dir(int cp_cp, int cp, const char* copy_file_name) {
         }
     }
     closedir(dir);
+    closedir(dirto);
     return 1;
 }
