@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+//функция, которая выводит информацию 
 void system_file_info(const char *fs_name, struct statvfs *sbfs) {
     printf("Usage: %s\n\n", fs_name);
 
@@ -26,7 +27,7 @@ void system_file_info(const char *fs_name, struct statvfs *sbfs) {
      struct statvfs sbfs;
      struct stat sb;
 
-     char *file_name;
+     char *file_name = ".";
      char *fs_name;
 
      if (argc < 2) {
@@ -34,14 +35,11 @@ void system_file_info(const char *fs_name, struct statvfs *sbfs) {
          return 0;
      }
      else if (argc == 2) {
-         file_name = (char*)malloc(strlen(argv[1]));
-         strcpy(file_name, argv[1]);
+         file_name = argv[1];
      }
      else {
-        fs_name = (char*)malloc(strlen(argv[1]) + sizeof("."));
-        strcpy(fs_name, ".");
-        strcat(fs_name, argv[1]);
-        file_name = (char*)malloc(strlen(argv[2]));
+         fs_name = argv[1];
+         file_name = argv[2];
      } 
      
      if (lstat(fs_name, &sb) < 0) {
