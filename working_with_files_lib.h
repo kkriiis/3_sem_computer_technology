@@ -21,4 +21,4 @@ char dtype_char(unsigned char dtype);
 
 char file_mode(unsigned mode);
 
-int copy_dir(int cp_cp, int cp, const char* copy_file_name);
+int copy_dir(int file_from, int file_to);
