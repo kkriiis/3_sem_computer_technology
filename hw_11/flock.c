@@ -22,12 +22,12 @@ int main(int argc, char *argv[]) {
     int counter = 1;
 
     //блокируем чтение и запись файла
-    flock(f, F_LOCK);
+    flock(f, LOCK_UN);
 
     long int bytes_read = read(f, buf, N_LENGTH);
     if (bytes_read < 0) {
         fprintf(stderr, "Failed in read");
-        flock(f, F_LOCK);
+        flock(f, LOCK_UN);
         close(f);
         return 0;
     }
@@ -44,13 +44,13 @@ int main(int argc, char *argv[]) {
 
     if (pwrite(f, number, sizeof(number), 0) < 0) {
         fprintf(stderr, "Failed to write");
-        flock(f, F_LOCK);
+        flock(f, LOCK_UN);
         close(f);
         return 0;
     }
 
     //разблокируем и закроем файл 
-    flock(f, F_LOCK);
+    flock(f, LOCK_UN);
     close(f);
     return 1;
 }
